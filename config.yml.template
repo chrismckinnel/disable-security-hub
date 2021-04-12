@@ -1,0 +1,8 @@
+security_hub_master_profile: 111111111111_AWSAdministratorAccess
+security_hub_member_profiles:
+  - 111111111111_AWSAdministratorAccess
+  - 111111111111_AWSAdministratorAccess
+  - 111111111111_AWSAdministratorAccess
+  - 111111111111_AWSAdministratorAccess
+  - 111111111111_AWSAdministratorAccess
+  - 111111111111_AWSAdministratorAccess
