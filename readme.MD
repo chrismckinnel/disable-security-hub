@@ -40,7 +40,7 @@ E.g.,
     aws_session_token=
     region=ap-southeast-2
 
-3. Copy config.tml.template to config.yml and update it with your IAM profiles:
+3. Copy config.tml.template to config.yml and update it with your IAM profiles and Security Hub Service Regions (from the regions we are disabling the service):
 
 E.g., this is what it might look like if you're using AWS SSO:
 

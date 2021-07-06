@@ -10,8 +10,6 @@ import botocore
 from boto3.session import Session
 
 logging.basicConfig(level=logging.INFO)
-
-
 def disable_security_hub():
     logging.warn('This script will disassociate all member accounts and then '
                  'disable security hub completely in all accounts and all '
@@ -38,15 +36,13 @@ def disable_security_hub():
     
 def disable_security_hub_in_member_accounts(profile_names):
     logging.info('Disabling Security Hub in all Member accounts')
-    available_regions = get_available_regions(service='securityhub')
+    config = get_config()
     for profile_name in profile_names:
-        for region_name in available_regions:
+        for region_name in config.get('regions'):
             disable_security_hub_in_region(
                 profile_name=profile_name, 
                 region_name=region_name
             )
-            
-
 def get_master_account_session(region_name, profile_name):
     return Session(
         region_name=region_name, 
@@ -55,8 +51,8 @@ def get_master_account_session(region_name, profile_name):
 
             
 def disassociate_member_accounts_from_master(profile_name, account_ids):
-    
-    for region_name in get_available_regions(service='securityhub'):
+    config = get_config()
+    for region_name in config.get('regions'):
         session = get_master_account_session(
             region_name=region_name,
             profile_name=profile_name
@@ -73,8 +69,8 @@ def disassociate_member_accounts_from_master(profile_name, account_ids):
     
     
 def delete_member_accounts_from_master(profile_name, account_ids):
-    
-    for region_name in get_available_regions(service='securityhub'):
+    config = get_config()
+    for region_name in config.get('regions'):
         session = get_master_account_session(
             region_name=region_name,
             profile_name=profile_name
@@ -96,8 +92,6 @@ def get_member_account_ids(config):
         get_account_id_from_profile(profile_name=profile_name)
         for profile_name in config.get('security_hub_member_profiles')
     ]
-    
-    
 def get_account_id_from_profile(profile_name):
     session = Session(
         profile_name=profile_name
@@ -120,18 +114,10 @@ def disable_security_hub_in_region(profile_name, region_name):
     except botocore.exceptions.ClientError as exception:
         if exception.response['Error']['Code'] == 'UnrecognizedClientException':
             logging.info('Ignoring region %s, probably not enabled' % region_name)
-
-
-def get_available_regions(service):
-    session = Session()
-    return session.get_available_regions(service)
-
-
 def get_config():
     with open('config.yml') as yaml_file:
-        config = yaml.load(yaml_file)
+        config = yaml.safe_load(yaml_file)
     return config
-
 
 if __name__ == '__main__':
     disable_security_hub()
